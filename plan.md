@@ -18,7 +18,7 @@ cssclasses:
 - [Argparse](definitions/Argparse.md)
 - [Regex-based detector](definitions/Regex-based-detector.md)
 - [Entropy-based detector](definitions/Entropy-based-detector.md)
-- [Keyword, context detector](definitions/Keyword-%context-detector.md)
+- [Keyword, context detector](definitions/Keyword-context-detector.md)
 - [Ошибки 1 и 2 рода](definitions/Errors_of_the_1st_and_2nd_kind.md)
 
 Для поиска информации по данным терминам и определениям была использована нейросеть Perplexity
