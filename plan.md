@@ -8,7 +8,7 @@ cssclasses:
 
 вот их перечень:
 
-- [Секреты в коде](definitions/Sicrets_in_code.md)
+- [Секреты в коде](definitions/Secrets_in_code.md)
 - [SLM](definitions/SLM.md)
 - [AppSec](definitions/AppSec.md)
 - [SAST](definitions/SAST.md)
