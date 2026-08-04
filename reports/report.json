@@ -1,0 +1,70 @@
+{
+  "scan_info": {
+    "version": "0.1.0",
+    "total_findings": 5,
+    "secrets": 2,
+    "insecure_code": 3
+  },
+  "findings": [
+    {
+      "file": "examples\\example_repo\\config.py",
+      "line": 5,
+      "type": "api_key",
+      "category": "secret",
+      "severity": "high",
+      "confidence": 0.7,
+      "detector": "regex",
+      "snippet": "API_KEY = \"sk-live-abc123def456ghi789jkl012mno345\"",
+      "explanation": "[regex] Обнаружен паттерн: API_KEY\\s*=\\s*[\"\\'][^\"\\']+[\"\\']",
+      "metadata": null
+    },
+    {
+      "file": "examples\\example_repo\\config.py",
+      "line": 6,
+      "type": "password",
+      "category": "secret",
+      "severity": "high",
+      "confidence": 0.7,
+      "detector": "regex",
+      "snippet": "DB_PASSWORD = \"SuperSecret123!\"",
+      "explanation": "[regex] Обнаружен паттерн: PASSWORD\\s*=\\s*[\"\\'][^\"\\']+[\"\\']",
+      "metadata": null
+    },
+    {
+      "file": "examples\\example_repo\\utils.py",
+      "line": 5,
+      "type": "shell_true",
+      "category": "insecure_code",
+      "severity": "medium",
+      "confidence": 0.7,
+      "detector": "regex",
+      "snippet": "# ОПАСНО: shell=True с пользовательским вводом",
+      "explanation": "[regex] Обнаружен паттерн: shell\\s*=\\s*True",
+      "metadata": null
+    },
+    {
+      "file": "examples\\example_repo\\utils.py",
+      "line": 6,
+      "type": "shell_true",
+      "category": "insecure_code",
+      "severity": "medium",
+      "confidence": 0.7,
+      "detector": "regex",
+      "snippet": "subprocess.run(f\"ls {user_input}\", shell=True)",
+      "explanation": "[regex] Обнаружен паттерн: shell\\s*=\\s*True",
+      "metadata": null
+    },
+    {
+      "file": "examples\\example_repo\\utils.py",
+      "line": 10,
+      "type": "eval_usage",
+      "category": "insecure_code",
+      "severity": "medium",
+      "confidence": 0.7,
+      "detector": "regex",
+      "snippet": "return eval(expression)",
+      "explanation": "[regex] Обнаружен паттерн: \\beval\\s*\\(",
+      "metadata": null
+    }
+  ]
+}

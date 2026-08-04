@@ -1,0 +1,17 @@
+{
+  "dataset": "data/test.jsonl",
+  "total_examples": 527,
+  "binary": {
+    "tp": 263,
+    "fp": 95,
+    "fn": 80,
+    "tn": 89,
+    "precision": 0.7346,
+    "recall": 0.7668,
+    "f1": 0.7504,
+    "fpr": 0.5163,
+    "fnr": 0.2332
+  },
+  "macro_f1": 0.3368,
+  "avg_time_ms": 0.5
+}
