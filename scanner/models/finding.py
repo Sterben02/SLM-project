@@ -32,3 +32,4 @@ class Finding(BaseModel):
     snippet: str
     explanation: str
     metadata: Optional[dict] = None
+    recommendation: str = ""

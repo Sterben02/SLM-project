@@ -4,53 +4,29 @@
 
 ## 📊 Сводка
 
-- **Всего срабатываний:** 5
+- **Всего срабатываний:** 2
 - **Секретов:** 2
-- **Небезопасного кода:** 3
+- **Небезопасного кода:** 0
 
 ## 📋 Таблица срабатываний
 
 | Файл | Строка | Тип | Категория | Severity | Detector |
 |---|---|---|---|---|---|
-| `examples\example_repo\config.py` | 5 | api_key | secret | high | regex |
-| `examples\example_repo\config.py` | 6 | password | secret | high | regex |
-| `examples\example_repo\utils.py` | 5 | shell_true | insecure_code | medium | regex |
-| `examples\example_repo\utils.py` | 6 | shell_true | insecure_code | medium | regex |
-| `examples\example_repo\utils.py` | 10 | eval_usage | insecure_code | medium | regex |
+| `examples\example_repo_c\vulnerable.c` | 5 | generic_api_key | secret | high | regex |
+| `examples\example_repo_c\vulnerable.c` | 5 | high_entropy_string | secret | medium | entropy |
 
 ## 💡 Объяснения
 
-### `examples\example_repo\config.py:5` — api_key
+### `examples\example_repo_c\vulnerable.c:5` — generic_api_key
 - **Категория:** secret
 - **Severity:** high
-- **Confidence:** 0.70
-- **Объяснение:** [regex] Обнаружен паттерн: API_KEY\s*=\s*["\'][^"\']+["\']
-- **Фрагмент:** `API_KEY = "sk-live-abc123def456ghi789jkl012mno345"`
+- **Confidence:** 0.85
+- **Объяснение:** [regex] Обнаружен паттерн 'Generic API Key': `api_key = "sk-proj-1234567890abcdef"`
+- **Фрагмент:** `char* api_key = "sk-proj-1234567890abcdef";  // секрет`
 
-### `examples\example_repo\config.py:6` — password
+### `examples\example_repo_c\vulnerable.c:5` — high_entropy_string
 - **Категория:** secret
-- **Severity:** high
-- **Confidence:** 0.70
-- **Объяснение:** [regex] Обнаружен паттерн: PASSWORD\s*=\s*["\'][^"\']+["\']
-- **Фрагмент:** `DB_PASSWORD = "SuperSecret123!"`
-
-### `examples\example_repo\utils.py:5` — shell_true
-- **Категория:** insecure_code
 - **Severity:** medium
-- **Confidence:** 0.70
-- **Объяснение:** [regex] Обнаружен паттерн: shell\s*=\s*True
-- **Фрагмент:** `# ОПАСНО: shell=True с пользовательским вводом`
-
-### `examples\example_repo\utils.py:6` — shell_true
-- **Категория:** insecure_code
-- **Severity:** medium
-- **Confidence:** 0.70
-- **Объяснение:** [regex] Обнаружен паттерн: shell\s*=\s*True
-- **Фрагмент:** `subprocess.run(f"ls {user_input}", shell=True)`
-
-### `examples\example_repo\utils.py:10` — eval_usage
-- **Категория:** insecure_code
-- **Severity:** medium
-- **Confidence:** 0.70
-- **Объяснение:** [regex] Обнаружен паттерн: \beval\s*\(
-- **Фрагмент:** `return eval(expression)`
+- **Confidence:** 0.99
+- **Объяснение:** [entropy] Строка имеет высокую энтропию (4.50), тип: alphanumeric. Возможно, это случайный секрет.
+- **Фрагмент:** `char* api_key = "sk-proj-1234567890abcdef";  // секрет`

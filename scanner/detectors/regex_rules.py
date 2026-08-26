@@ -108,4 +108,16 @@ REGEX_RULES = [
     ("pickle_loads", "insecure_code",
      r'\bpickle\.loads?\s*\(',
      Severity.HIGH, "Небезопасная десериализация pickle"),
+
+    ("unsafe_gets", "insecure_code",
+     r'\bgets\s*\(',
+     Severity.HIGH, "gets() не проверяет границы буфера — переполнение"),
+
+    ("unsafe_sprintf", "insecure_code",
+     r'\bsprintf\s*\(',
+     Severity.MEDIUM, "sprintf() без проверки длины — используйте snprintf()"),
+
+    ("unsafe_system", "insecure_code",
+     r'(?<!\.)\bsystem\s*\(',
+     Severity.HIGH, "system() с динамическим вводом — инъекция команд"),
 ]

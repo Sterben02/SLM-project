@@ -1,9 +1,11 @@
 # scanner/core/cascade.py
 """Каскад: baseline находит кандидатов, SLM проверяет и отсекает ложные."""
 from typing import List
+from pathlib import Path 
 
 from scanner.models import Finding
 from scanner.core.scanner import parse_file
+from scanner.utils.recommendations import get_recommendation
 
 
 def verify_with_slm(findings: List[Finding]) -> List[Finding]:
@@ -22,9 +24,10 @@ def verify_with_slm(findings: List[Finding]) -> List[Finding]:
     total = len(findings)
     done = 0
     for file_path, file_findings in by_file.items():
-        chunks = parse_file(file_path)
+        chunks = parse_file(Path(file_path))   # ← обернуть в Path
         for f in file_findings:
             done += 1
+            f.recommendation = get_recommendation(f.type)
             print(f"🤖 SLM проверяет {done}/{total}: {f.file}:{f.line} ({f.type})")
             chunk = _chunk_for_finding(chunks, f)
             if chunk is None:
