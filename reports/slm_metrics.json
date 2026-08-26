@@ -1,0 +1,14 @@
+{
+  "dataset": "data/test.jsonl",
+  "total": 527,
+  "errors": 0,
+  "tp": 343,
+  "fp": 2,
+  "fn": 0,
+  "tn": 182,
+  "precision": 0.9942,
+  "recall": 1.0,
+  "f1": 0.9971,
+  "fpr": 0.0109,
+  "fnr": 0.0
+}
