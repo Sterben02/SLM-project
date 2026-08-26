@@ -30,21 +30,22 @@ console = Console()
 @app.command()
 def scan(
         path: str = typer.Argument(..., help="Путь к файлу или папке"),
-        format: str = typer.Option("text", "--format", "-f", help="Формат отчёта: text, json, markdown"),
-        out: Optional[str] = typer.Option(None, "--out", "-o", help="Путь к файлу отчёта"),
+        format: str = typer.Option("markdown", "--format", help="json | markdown"),
+        out: str = typer.Option(None, "--out", help="Файл отчёта"),
         with_slm: bool = typer.Option(
             False, "--with-slm",
             help="Включить SLM-детектор (Qwen2.5-Coder-1.5B, медленнее но точнее)"
         ),
-        context_lines: int = typer.Option(3, "--context", help="Количество строк контекста"),
 ):
-    """Сканирует путь на секреты и небезопасный код."""
+    """Сканирует путь на секреты и небезопасный код."""   # ← ПЕРВОЙ строкой!
     detectors = None
     if with_slm:
-        from scanner.detectors import get_baseline_detectors
-        from scanner.llm import SLMDetector
-        detectors = get_baseline_detectors() + [SLMDetector()]
-        console.print("[bold green]🤖 SLM-детектор включён[/bold green]")
+        console.print("[bold green]🤖 Каскад: baseline → проверка SLM[/bold green]")
+        findings = scan_path(path, show_progress=True)
+        from scanner.core.cascade import verify_with_slm
+        findings = verify_with_slm(findings)
+    else:
+        findings = scan_path(path, show_progress=True)
 
     console.print(Panel.fit(
         f"[bold cyan]🔍 SLM Secret & Insecure Code Scanner[/bold cyan]\n"
