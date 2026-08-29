@@ -148,6 +148,7 @@ def _save_json_report(findings, out_path: str):
 def _save_markdown_report(findings, out_path: str):
     """Сохранение Markdown-отчёта."""
     Path(out_path).parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8-sig") as f:
 
     secrets = [f for f in findings if f.category == "secret"]
     insecure = [f for f in findings if f.category == "insecure_code"]

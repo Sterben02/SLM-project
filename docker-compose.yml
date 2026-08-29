@@ -1,0 +1,7 @@
+services:
+  scanner:
+    build: .
+    image: slm-scanner:latest
+    volumes:
+      - ./reports:/app/reports   # отчёты попадают на хост
+    command: ["scan", "examples/example_repo", "--format", "markdown", "--out", "reports/report_docker.md"]
