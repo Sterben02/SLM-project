@@ -30,23 +30,16 @@ console = Console()
 @app.command()
 def scan(
         path: str = typer.Argument(..., help="Путь к файлу или папке"),
-        format: str = typer.Option("markdown", "--format", help="json | markdown"),
-        out: str = typer.Option(None, "--out", help="Файл отчёта"),
+        format: str = typer.Option("text", "--format", "-f", help="Формат отчёта: text, json, markdown"),
+        out: Optional[str] = typer.Option(None, "--out", "-o", help="Путь к файлу отчёта"),
         with_slm: bool = typer.Option(
             False, "--with-slm",
-            help="Включить SLM-детектор (Qwen2.5-Coder-1.5B, медленнее но точнее)"
+            help="Включить каскад: baseline → проверка SLM (точнее, но медленнее)"
         ),
+        context_lines: int = typer.Option(3, "--context", help="Количество строк контекста"),
 ):
-    """Сканирует путь на секреты и небезопасный код."""   # ← ПЕРВОЙ строкой!
-    detectors = None
-    if with_slm:
-        console.print("[bold green]🤖 Каскад: baseline → проверка SLM[/bold green]")
-        findings = scan_path(path, show_progress=True)
-        from scanner.core.cascade import verify_with_slm
-        findings = verify_with_slm(findings)
-    else:
-        findings = scan_path(path, show_progress=True)
-
+    """Сканирует путь на секреты и небезопасный код."""
+    # Баннер — ДО сканирования
     console.print(Panel.fit(
         f"[bold cyan]🔍 SLM Secret & Insecure Code Scanner[/bold cyan]\n"
         f"Версия: {__version__}",
@@ -65,8 +58,14 @@ def scan(
         console.print("[yellow]⚠️  Нет файлов для сканирования[/yellow]")
         raise typer.Exit(code=0)
 
-    # Сканирование
-    findings = scan_path(path, detectors=detectors, show_progress=True)
+    # ЕДИНСТВЕННОЕ сканирование: baseline или каскад
+    if with_slm:
+        console.print("[bold green]🤖 Каскад: baseline → проверка SLM[/bold green]")
+        findings = scan_path(path, show_progress=True)
+        from scanner.core.cascade import verify_with_slm
+        findings = verify_with_slm(findings)
+    else:
+        findings = scan_path(path, show_progress=True)
 
     # Сводка
     secrets = [f for f in findings if f.category == "secret"]
