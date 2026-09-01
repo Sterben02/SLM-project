@@ -1,11 +1,14 @@
+@"
 venv/
 .venv/
 __pycache__/
 *.pyc
 .git/
-models_cache/
 data/
 reports/
 *.tar.gz
 Dockerfile
 docker-compose.yml
+models_cache/dry_run/
+models_cache/qwen-secret-scanner-lora/checkpoint-*/
+"@ | Out-File -FilePath .dockerignore -Encoding UTF8

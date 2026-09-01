@@ -1,6 +1,6 @@
-# scanner/cli.py
+﻿# scanner/cli.py
 """
-CLI-интерфейс сканера на базе Typer.
+CLI-РёРЅС‚РµСЂС„РµР№СЃ СЃРєР°РЅРµСЂР° РЅР° Р±Р°Р·Рµ Typer.
 """
 import json
 from pathlib import Path
@@ -17,7 +17,7 @@ from scanner.core.scanner import scan_path, iter_files
 
 app = typer.Typer(
     name="scanner",
-    help="🔍 SLM-сканер секретов и небезопасного кода",
+    help="рџ”Ќ SLM-СЃРєР°РЅРµСЂ СЃРµРєСЂРµС‚РѕРІ Рё РЅРµР±РµР·РѕРїР°СЃРЅРѕРіРѕ РєРѕРґР°",
     add_completion=False,
 )
 
@@ -25,60 +25,60 @@ console = Console()
 
 
 # ==========================================
-# Команда: scan
+# РљРѕРјР°РЅРґР°: scan
 # ==========================================
 @app.command()
 def scan(
-        path: str = typer.Argument(..., help="Путь к файлу или папке"),
-        format: str = typer.Option("text", "--format", "-f", help="Формат отчёта: text, json, markdown"),
-        out: Optional[str] = typer.Option(None, "--out", "-o", help="Путь к файлу отчёта"),
+        path: str = typer.Argument(..., help="РџСѓС‚СЊ Рє С„Р°Р№Р»Сѓ РёР»Рё РїР°РїРєРµ"),
+        format: str = typer.Option("text", "--format", "-f", help="Р¤РѕСЂРјР°С‚ РѕС‚С‡С‘С‚Р°: text, json, markdown"),
+        out: Optional[str] = typer.Option(None, "--out", "-o", help="РџСѓС‚СЊ Рє С„Р°Р№Р»Сѓ РѕС‚С‡С‘С‚Р°"),
         with_slm: bool = typer.Option(
             False, "--with-slm",
-            help="Включить каскад: baseline → проверка SLM (точнее, но медленнее)"
+            help="Р’РєР»СЋС‡РёС‚СЊ РєР°СЃРєР°Рґ: baseline в†’ РїСЂРѕРІРµСЂРєР° SLM (С‚РѕС‡РЅРµРµ, РЅРѕ РјРµРґР»РµРЅРЅРµРµ)"
         ),
-        context_lines: int = typer.Option(3, "--context", help="Количество строк контекста"),
+        context_lines: int = typer.Option(3, "--context", help="РљРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂРѕРє РєРѕРЅС‚РµРєСЃС‚Р°"),
 ):
-    """Сканирует путь на секреты и небезопасный код."""
-    # Баннер — ДО сканирования
+    """РЎРєР°РЅРёСЂСѓРµС‚ РїСѓС‚СЊ РЅР° СЃРµРєСЂРµС‚С‹ Рё РЅРµР±РµР·РѕРїР°СЃРЅС‹Р№ РєРѕРґ."""
+    # Р‘Р°РЅРЅРµСЂ вЂ” Р”Рћ СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ
     console.print(Panel.fit(
-        f"[bold cyan]🔍 SLM Secret & Insecure Code Scanner[/bold cyan]\n"
-        f"Версия: {__version__}",
+        f"[bold cyan]рџ”Ќ SLM Secret & Insecure Code Scanner[/bold cyan]\n"
+        f"Р’РµСЂСЃРёСЏ: {__version__}",
         border_style="cyan",
     ))
 
     target = Path(path)
     if not target.exists():
-        console.print(f"[red]❌ Путь не найден: {path}[/red]")
+        console.print(f"[red]вќЊ РџСѓС‚СЊ РЅРµ РЅР°Р№РґРµРЅ: {path}[/red]")
         raise typer.Exit(code=1)
 
     files = list(iter_files(path))
-    console.print(f"📁 Найдено файлов для анализа: [bold]{len(files)}[/bold]")
+    console.print(f"рџ“Ѓ РќР°Р№РґРµРЅРѕ С„Р°Р№Р»РѕРІ РґР»СЏ Р°РЅР°Р»РёР·Р°: [bold]{len(files)}[/bold]")
 
     if not files:
-        console.print("[yellow]⚠️  Нет файлов для сканирования[/yellow]")
+        console.print("[yellow]вљ пёЏ  РќРµС‚ С„Р°Р№Р»РѕРІ РґР»СЏ СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ[/yellow]")
         raise typer.Exit(code=0)
 
-    # ЕДИНСТВЕННОЕ сканирование: baseline или каскад
+    # Р•Р”РРќРЎРўР’Р•РќРќРћР• СЃРєР°РЅРёСЂРѕРІР°РЅРёРµ: baseline РёР»Рё РєР°СЃРєР°Рґ
     if with_slm:
-        console.print("[bold green]🤖 Каскад: baseline → проверка SLM[/bold green]")
+        console.print("[bold green]рџ¤– РљР°СЃРєР°Рґ: baseline в†’ РїСЂРѕРІРµСЂРєР° SLM[/bold green]")
         findings = scan_path(path, show_progress=True)
         from scanner.core.cascade import verify_with_slm
         findings = verify_with_slm(findings)
     else:
         findings = scan_path(path, show_progress=True)
 
-    # Сводка
+    # РЎРІРѕРґРєР°
     secrets = [f for f in findings if f.category == "secret"]
     insecure = [f for f in findings if f.category == "insecure_code"]
 
     console.print()
-    console.print(f"[green]✅ Сканирование завершено[/green]")
-    console.print(f"   Найдено срабатываний: [bold]{len(findings)}[/bold]")
-    console.print(f"   • Секретов: [bold red]{len(secrets)}[/bold red]")
-    console.print(f"   • Небезопасного кода: [bold yellow]{len(insecure)}[/bold yellow]")
+    console.print(f"[green]вњ… РЎРєР°РЅРёСЂРѕРІР°РЅРёРµ Р·Р°РІРµСЂС€РµРЅРѕ[/green]")
+    console.print(f"   РќР°Р№РґРµРЅРѕ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёР№: [bold]{len(findings)}[/bold]")
+    console.print(f"   вЂў РЎРµРєСЂРµС‚РѕРІ: [bold red]{len(secrets)}[/bold red]")
+    console.print(f"   вЂў РќРµР±РµР·РѕРїР°СЃРЅРѕРіРѕ РєРѕРґР°: [bold yellow]{len(insecure)}[/bold yellow]")
     console.print()
 
-    # Вывод результатов
+    # Р’С‹РІРѕРґ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ
     if format == "text":
         _print_text_report(findings)
     elif format == "json":
@@ -86,24 +86,24 @@ def scan(
     elif format == "markdown":
         _save_markdown_report(findings, out or "reports/report.md")
     else:
-        console.print(f"[red]❌ Неизвестный формат: {format}[/red]")
+        console.print(f"[red]вќЊ РќРµРёР·РІРµСЃС‚РЅС‹Р№ С„РѕСЂРјР°С‚: {format}[/red]")
         raise typer.Exit(code=1)
 
 
 def _print_text_report(findings):
-    """Вывод отчёта в консоль."""
+    """Р’С‹РІРѕРґ РѕС‚С‡С‘С‚Р° РІ РєРѕРЅСЃРѕР»СЊ."""
     if not findings:
-        console.print("[green]✨ Срабатываний не найдено[/green]")
+        console.print("[green]вњЁ РЎСЂР°Р±Р°С‚С‹РІР°РЅРёР№ РЅРµ РЅР°Р№РґРµРЅРѕ[/green]")
         return
 
-    table = Table(title="📋 Найденные срабатывания", box=box.ROUNDED)
-    table.add_column("Файл", style="cyan")
-    table.add_column("Строка", justify="right", style="magenta")
-    table.add_column("Тип", style="yellow")
-    table.add_column("Категория", style="blue")
+    table = Table(title="рџ“‹ РќР°Р№РґРµРЅРЅС‹Рµ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёСЏ", box=box.ROUNDED)
+    table.add_column("Р¤Р°Р№Р»", style="cyan")
+    table.add_column("РЎС‚СЂРѕРєР°", justify="right", style="magenta")
+    table.add_column("РўРёРї", style="yellow")
+    table.add_column("РљР°С‚РµРіРѕСЂРёСЏ", style="blue")
     table.add_column("Severity", style="red")
     table.add_column("Confidence", justify="right")
-    table.add_column("Детектор", style="green")
+    table.add_column("Р”РµС‚РµРєС‚РѕСЂ", style="green")
 
     for f in findings:
         table.add_row(
@@ -118,15 +118,15 @@ def _print_text_report(findings):
 
     console.print(table)
 
-    # Первые 3 объяснения
+    # РџРµСЂРІС‹Рµ 3 РѕР±СЉСЏСЃРЅРµРЅРёСЏ
     console.print()
-    console.print("[bold]💡 Примеры объяснений:[/bold]")
+    console.print("[bold]рџ’Ў РџСЂРёРјРµСЂС‹ РѕР±СЉСЏСЃРЅРµРЅРёР№:[/bold]")
     for f in findings[:3]:
-        console.print(f"  • [cyan]{f.file}:{f.line}[/cyan] — {f.explanation}")
+        console.print(f"  вЂў [cyan]{f.file}:{f.line}[/cyan] вЂ” {f.explanation}")
 
 
 def _save_json_report(findings, out_path: str):
-    """Сохранение JSON-отчёта."""
+    """РЎРѕС…СЂР°РЅРµРЅРёРµ JSON-РѕС‚С‡С‘С‚Р°."""
     Path(out_path).parent.mkdir(parents=True, exist_ok=True)
 
     report = {
@@ -142,31 +142,29 @@ def _save_json_report(findings, out_path: str):
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
 
-    console.print(f"📝 JSON-отчёт сохранён: [bold]{out_path}[/bold]")
+    console.print(f"рџ“ќ JSON-РѕС‚С‡С‘С‚ СЃРѕС…СЂР°РЅС‘РЅ: [bold]{out_path}[/bold]")
 
 
 def _save_markdown_report(findings, out_path: str):
-    """Сохранение Markdown-отчёта."""
+    """РЎРѕС…СЂР°РЅРµРЅРёРµ Markdown-РѕС‚С‡С‘С‚Р°."""
     Path(out_path).parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w", encoding="utf-8-sig") as f:
-
-    secrets = [f for f in findings if f.category == "secret"]
-    insecure = [f for f in findings if f.category == "insecure_code"]
-
-    lines = [
-        "# 🔍 Отчёт сканера секретов и небезопасного кода",
+    with open(out_path, "w", encoding="utf-8-sig") as f:
+        secrets = [f for f in findings if f.category == "secret"]
+        insecure = [f for f in findings if f.category == "insecure_code"]
+        lines = [
+        "# рџ”Ќ РћС‚С‡С‘С‚ СЃРєР°РЅРµСЂР° СЃРµРєСЂРµС‚РѕРІ Рё РЅРµР±РµР·РѕРїР°СЃРЅРѕРіРѕ РєРѕРґР°",
         "",
-        f"**Версия:** {__version__}",
+        f"**Р’РµСЂСЃРёСЏ:** {__version__}",
         "",
-        "## 📊 Сводка",
+        "## рџ“Љ РЎРІРѕРґРєР°",
         "",
-        f"- **Всего срабатываний:** {len(findings)}",
-        f"- **Секретов:** {len(secrets)}",
-        f"- **Небезопасного кода:** {len(insecure)}",
+        f"- **Р’СЃРµРіРѕ СЃСЂР°Р±Р°С‚С‹РІР°РЅРёР№:** {len(findings)}",
+        f"- **РЎРµРєСЂРµС‚РѕРІ:** {len(secrets)}",
+        f"- **РќРµР±РµР·РѕРїР°СЃРЅРѕРіРѕ РєРѕРґР°:** {len(insecure)}",
         "",
-        "## 📋 Таблица срабатываний",
+        "## рџ“‹ РўР°Р±Р»РёС†Р° СЃСЂР°Р±Р°С‚С‹РІР°РЅРёР№",
         "",
-        "| Файл | Строка | Тип | Категория | Severity | Detector |",
+        "| Р¤Р°Р№Р» | РЎС‚СЂРѕРєР° | РўРёРї | РљР°С‚РµРіРѕСЂРёСЏ | Severity | Detector |",
         "|---|---|---|---|---|---|",
     ]
 
@@ -176,93 +174,93 @@ def _save_markdown_report(findings, out_path: str):
             f"{f.severity.value} | {f.detector.value} |"
         )
 
-    lines.extend(["", "## 💡 Объяснения", ""])
+    lines.extend(["", "## рџ’Ў РћР±СЉСЏСЃРЅРµРЅРёСЏ", ""])
     for f in findings:
-        lines.append(f"### `{f.file}:{f.line}` — {f.type}")
-        lines.append(f"- **Категория:** {f.category}")
+        lines.append(f"### `{f.file}:{f.line}` вЂ” {f.type}")
+        lines.append(f"- **РљР°С‚РµРіРѕСЂРёСЏ:** {f.category}")
         lines.append(f"- **Severity:** {f.severity.value}")
         lines.append(f"- **Confidence:** {f.confidence:.2f}")
-        lines.append(f"- **Объяснение:** {f.explanation}")
-        lines.append(f"- **Фрагмент:** `{f.snippet.strip()}`")
+        lines.append(f"- **РћР±СЉСЏСЃРЅРµРЅРёРµ:** {f.explanation}")
+        lines.append(f"- **Р¤СЂР°РіРјРµРЅС‚:** `{f.snippet.strip()}`")
         lines.append("")
 
     with open(out_path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
 
-    console.print(f"📝 Markdown-отчёт сохранён: [bold]{out_path}[/bold]")
+    console.print(f"рџ“ќ Markdown-РѕС‚С‡С‘С‚ СЃРѕС…СЂР°РЅС‘РЅ: [bold]{out_path}[/bold]")
 
 
 # ==========================================
-# Команда: info
+# РљРѕРјР°РЅРґР°: info
 # ==========================================
 @app.command()
 def info():
     """
-    Показать информацию о сканере и модели.
+    РџРѕРєР°Р·Р°С‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ СЃРєР°РЅРµСЂРµ Рё РјРѕРґРµР»Рё.
     """
     console.print(Panel.fit(
-        "[bold cyan]🔍 SLM Secret & Insecure Code Scanner[/bold cyan]\n"
-        f"Версия: {__version__}",
+        "[bold cyan]рџ”Ќ SLM Secret & Insecure Code Scanner[/bold cyan]\n"
+        f"Р’РµСЂСЃРёСЏ: {__version__}",
         border_style="cyan",
     ))
 
     table = Table(box=box.ROUNDED, show_header=False)
-    table.add_column("Параметр", style="bold")
-    table.add_column("Значение")
+    table.add_column("РџР°СЂР°РјРµС‚СЂ", style="bold")
+    table.add_column("Р—РЅР°С‡РµРЅРёРµ")
 
-    table.add_row("Язык", "Python 3.11+")
+    table.add_row("РЇР·С‹Рє", "Python 3.11+")
     table.add_row("CLI", "Typer")
     table.add_row("SLM", "Qwen2.5-Coder-1.5B-Instruct")
-    table.add_row("Baseline-детекторы", "regex, entropy, keyword")
-    table.add_row("Классы секретов", "5 (api_key, token, password, private_key, jwt)")
-    table.add_row("Классы insecure", "6 (eval, exec, shell, sql, hash, creds)")
+    table.add_row("Baseline-РґРµС‚РµРєС‚РѕСЂС‹", "regex, entropy, keyword")
+    table.add_row("РљР»Р°СЃСЃС‹ СЃРµРєСЂРµС‚РѕРІ", "5 (api_key, token, password, private_key, jwt)")
+    table.add_row("РљР»Р°СЃСЃС‹ insecure", "6 (eval, exec, shell, sql, hash, creds)")
 
     console.print(table)
 
 
 # ==========================================
-# Команда: version
+# РљРѕРјР°РЅРґР°: version
 # ==========================================
 @app.command()
 def version():
-    """Показать версию сканера."""
+    """РџРѕРєР°Р·Р°С‚СЊ РІРµСЂСЃРёСЋ СЃРєР°РЅРµСЂР°."""
     console.print(f"[cyan]SLM Scanner[/cyan] version [bold]{__version__}[/bold]")
 
 
 # ==========================================
-# Команда: demo
+# РљРѕРјР°РЅРґР°: demo
 # ==========================================
 @app.command()
 def demo():
     """
-    Запустить демонстрацию на учебном репозитории.
+    Р—Р°РїСѓСЃС‚РёС‚СЊ РґРµРјРѕРЅСЃС‚СЂР°С†РёСЋ РЅР° СѓС‡РµР±РЅРѕРј СЂРµРїРѕР·РёС‚РѕСЂРёРё.
     """
     console.print(Panel.fit(
-        "[bold cyan]🎬 Демонстрация сканера[/bold cyan]",
+        "[bold cyan]рџЋ¬ Р”РµРјРѕРЅСЃС‚СЂР°С†РёСЏ СЃРєР°РЅРµСЂР°[/bold cyan]",
         border_style="cyan",
     ))
 
     demo_path = Path("examples/example_repo")
     if not demo_path.exists():
-        console.print("[yellow]⚠️  Учебный репозиторий не найден.[/yellow]")
-        console.print("Создайте [bold]examples/example_repo/[/bold] с тестовыми файлами.")
+        console.print("[yellow]вљ пёЏ  РЈС‡РµР±РЅС‹Р№ СЂРµРїРѕР·РёС‚РѕСЂРёР№ РЅРµ РЅР°Р№РґРµРЅ.[/yellow]")
+        console.print("РЎРѕР·РґР°Р№С‚Рµ [bold]examples/example_repo/[/bold] СЃ С‚РµСЃС‚РѕРІС‹РјРё С„Р°Р№Р»Р°РјРё.")
         console.print()
-        console.print("Запустите сканирование вручную:")
-        console.print("  [cyan]python -m scanner scan <путь>[/cyan]")
+        console.print("Р—Р°РїСѓСЃС‚РёС‚Рµ СЃРєР°РЅРёСЂРѕРІР°РЅРёРµ РІСЂСѓС‡РЅСѓСЋ:")
+        console.print("  [cyan]python -m scanner scan <РїСѓС‚СЊ>[/cyan]")
         raise typer.Exit(code=1)
 
-    # Вызываем scan
+    # Р’С‹Р·С‹РІР°РµРј scan
     scan(str(demo_path), format="text", baseline_only=True)
 
 
 # ==========================================
-# Callback для главного меню
+# Callback РґР»СЏ РіР»Р°РІРЅРѕРіРѕ РјРµРЅСЋ
 # ==========================================
 @app.callback()
 def main():
     """
-    🔍 SLM-сканер секретов и небезопасного кода.
-    Используйте --help для списка команд.
+    рџ”Ќ SLM-СЃРєР°РЅРµСЂ СЃРµРєСЂРµС‚РѕРІ Рё РЅРµР±РµР·РѕРїР°СЃРЅРѕРіРѕ РєРѕРґР°.
+    РСЃРїРѕР»СЊР·СѓР№С‚Рµ --help РґР»СЏ СЃРїРёСЃРєР° РєРѕРјР°РЅРґ.
     """
     pass
 
